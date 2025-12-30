@@ -52,17 +52,12 @@ done
 
 
 log "add desktop file in $desktopfile"
-echo "[Desktop Entry]
-Name=kDrive
-GenericName=File Synchronizer
+
+desktopfilecontent=$(sed '/^Exec=/d' $desktopfile)
+
+echo "$desktopfilecontent
 Exec='${exec_file}'
-Terminal=false
-Icon=kdrive
-Categories=Network
-Type=Application
-StartupNotify=false
-X-GNOME-Autostart-enabled=true
-X-GNOME-Autostart-Delay=10" > $desktopfile
+" > $desktopfile
 chmod +x $desktopfile
 
 log "save actual version"
