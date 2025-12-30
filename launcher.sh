@@ -5,7 +5,10 @@ architectures=($(curl -s https://www.infomaniak.com/drive/latest | jq -r -n "inp
 selected=""
 PS3='For which architecture do you want to automatically download kDrive? '
 select name in "${architectures[@]}" ; do
-    selected=(${architectures[$REPLY]})
+    if [[ "$REPLY" -gt "0" ]]; then
+        opt=($REPLY-1)
+        selected=(${architectures[$opt]})
+    fi
     [[ $selected ]] && break
 done
 
@@ -32,7 +35,7 @@ echo "[Desktop Entry]
 Name=kdrive-auto-update
 GenericName=kDrive Auto Update
 Exec='${exec_file}'
-Terminal=true
+Terminal=false
 Categories=Network
 Type=Application
 StartupNotify=false

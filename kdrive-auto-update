@@ -24,7 +24,7 @@ if echo "$latest" | jq -e '.version' > /dev/null; then
   exit 1
 fi
 
-actual_version=$(cat $desktopfile | grep Version | cut -d'=' -f2)
+actual_version=$(cat $config_path/actual_version 2>/dev/null)
 
 log "actual_version: $actual_version"
 log "latest_version: $latest_version"
@@ -42,7 +42,7 @@ exec_file="$exec_path/kDrive-$architecture-v$latest_version.AppImage"
 wget -O "$exec_file"  "$downloadurl"
 chmod +x "$exec_file"
 
-histo=2
+histo=3
 log "remove old execution files omit last $histo files"
 for delete_file in `find "$exec_path" -type f -name kDrive-$architecture-v*.AppImage | sort -r | tail -n +$((histo + 1))`
 do
@@ -56,7 +56,6 @@ echo "[Desktop Entry]
 Name=kDrive
 GenericName=File Synchronizer
 Exec='${exec_file}'
-Version=${latest_version}
 Terminal=false
 Icon=kdrive
 Categories=Network
@@ -65,3 +64,6 @@ StartupNotify=false
 X-GNOME-Autostart-enabled=true
 X-GNOME-Autostart-Delay=10" > $desktopfile
 chmod +x $desktopfile
+
+log "save actual version"
+echo "$latest_version" > $config_path/actual_version
