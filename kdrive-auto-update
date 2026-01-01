@@ -1,13 +1,24 @@
 #!/bin/bash
 
 log() {
-  echo $1
+  now="$(date +%F) $(date +"%T")"
+  echo "$now: $1"
+  echo "$now: $1" >> /var/tmp/kdrive-auto-update.log
 }
 
 config_path="${HOME}/.config/kdrive-auto-update" 
 
 architecture=$(cat $config_path/architecture)
 latest=$(curl -s https://www.infomaniak.com/drive/latest | jq ".\"$architecture\"")
+latest_version=$(echo "$latest" | jq -r ".version")
+actual_version=$(cat $config_path/actual_version 2>/dev/null)
+
+
+D='0|[1-9][0-9]*'
+if ! [[ "$latest_version" =~ ^($D)\.($D)\.($D)\.($D)$ ]]; then
+  log "unable to get latest version"
+  exit 1
+fi
 
 autostart_path="${HOME}/.config/autostart" 
 desktopfile="$autostart_path/kDrive.desktop"
@@ -16,15 +27,6 @@ exec_path="${HOME}/.local/bin"
 
 mkdir -p "$autostart_path"
 mkdir -p "$exec_path"
-
-if echo "$latest" | jq -e '.version' > /dev/null; then
-  latest_version=$(echo "$latest" | jq -r ".version")
-  else
-  log "unable to get latest version"
-  exit 1
-fi
-
-actual_version=$(cat $config_path/actual_version 2>/dev/null)
 
 log "actual_version: $actual_version"
 log "latest_version: $latest_version"

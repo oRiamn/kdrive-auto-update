@@ -11,8 +11,8 @@ This script checks if a new version of the kDrive client is available on Debian,
 
 ## Prerequisites
 
--  Debian-based system (e.g., Debian, Ubuntu).    
--  `curl` or `wget` for downloading the updates.
+-  Debian-based system ( Debian, Ubuntu, ...).    
+-  `curl` and `wget` for downloading the updates.
     
 ## Installation
 
@@ -49,6 +49,7 @@ chmod +x launcher.sh
 
 Once installed, the script automatically checks for updates to the kDrive client. 
 If an update is found, it will be downloaded and installed.
+Script logs in tmp log file `/var/tmp/kdrive-auto-update.log`
 
 ## Customization
 
