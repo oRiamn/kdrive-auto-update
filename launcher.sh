@@ -1,5 +1,29 @@
 #!/bin/bash
 
+get_repo_dir()
+{
+    local SOURCE_PATH="${BASH_SOURCE[0]}"
+    local SYMLINK_DIR
+    local repo_dir
+    # Resolve symlinks recursively
+    while [ -L "$SOURCE_PATH" ]; do
+        # Get symlink directory
+        SYMLINK_DIR="$( cd -P "$( dirname "$SOURCE_PATH" )" >/dev/null 2>&1 && pwd )"
+        # Resolve symlink target (relative or absolute)
+        SOURCE_PATH="$(readlink "$SOURCE_PATH")"
+        # Check if candidate path is relative or absolute
+        if [[ $SOURCE_PATH != /* ]]; then
+            # Candidate path is relative, resolve to full path
+            SOURCE_PATH=$SYMLINK_DIR/$SOURCE_PATH
+        fi
+    done
+    # Get final script directory path from fully resolved source path
+    repo_dir="$(cd -P "$( dirname "$SOURCE_PATH" )" >/dev/null 2>&1 && pwd)"
+    echo "$repo_dir"
+}
+
+repo_dir=$(get_repo_dir)
+
 architectures=($(curl -s https://www.infomaniak.com/drive/latest | jq -r -n "inputs | keys[]"))
 
 selected=""
@@ -27,7 +51,7 @@ echo "$architecture" > $config_path/architecture
 
 exec_file=$exec_path/kdrive-auto-update
 
-cp ./kdrive-auto-update "$exec_file"
+cp $repo_dir/kdrive-auto-update "$exec_file"
 chmod +x $exec_file
 
 desktopfile="$autostart_path/kdrive-auto-update.desktop"
